@@ -1,5 +1,8 @@
-com/careerflow/careerflow/UserRepository.class
-com/careerflow/careerflow/UserController.class
+com/careerflow/careerflow/ApplicationController.class
 com/careerflow/careerflow/HelloController.class
 com/careerflow/careerflow/User.class
+com/careerflow/careerflow/UserRepository.class
+com/careerflow/careerflow/Application.class
+com/careerflow/careerflow/UserController.class
 com/careerflow/careerflow/CareerflowApplication.class
+com/careerflow/careerflow/ApplicationRepository.class
