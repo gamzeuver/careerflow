@@ -61,119 +61,111 @@ function App() {
   };
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h1>CareerFlow</h1>
+    <div className="app-container">
+      <h1 className="page-title">CareerFlow</h1>
 
-      <p>Track internships, jobs, and interviews</p>
+      <p className="subtitle">Track your opportunities ✨</p>
 
-      <hr />
+      <div className="card">
+        <h2 className="section-title">Add Application</h2>
 
-      <h2>Add Application</h2>
+        <input
+          placeholder="Company"
+          value={company}
+          onChange={(e) => setCompany(e.target.value)}
+        />
 
-      <input
-        placeholder="Company"
-        value={company}
-        onChange={(e) => setCompany(e.target.value)}
-      />
+        <input
+          placeholder="Role"
+          value={role}
+          onChange={(e) => setRole(e.target.value)}
+        />
 
-      <br />
-      <br />
+        <select
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
+        >
+          <option value="APPLIED">Applied</option>
+          <option value="OA">Online Assessment</option>
+          <option value="INTERVIEW">Interview</option>
+          <option value="OFFER">Offer</option>
+          <option value="REJECTED">Rejected</option>
+        </select>
 
-      <input
-        placeholder="Role"
-        value={role}
-        onChange={(e) => setRole(e.target.value)}
-      />
+        <input
+          type="date"
+          value={applicationDate}
+          onChange={(e) => setApplicationDate(e.target.value)}
+        />
 
-      <br />
-      <br />
+        <textarea 
+          placeholder="Notes..."
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          rows={4}
+        />
 
-      <select
-        value={status}
-        onChange={(e) => setStatus(e.target.value)}
-      >
-        <option value="APPLIED">APPLIED</option>
-        <option value="OA">ONLINE ASSESSMENT</option>
-        <option value="INTERVIEW">INTERVIEW</option>
-        <option value="OFFER">OFFER</option>
-        <option value="REJECTED">REJECTED</option>
-      </select>
+        <button onClick={createApplication}>
+          Save Application
+        </button>
+      </div>
 
-      <br />
-      <br />
+      <div className="applications-section">
+        <h2 className="section-title">Applications</h2>
 
-      <input
-        type="date"
-        value={applicationDate}
-        onChange={(e) => setApplicationDate(e.target.value)}
-      />
+        {applications.length === 0 ? (
+          <div className="empty-state">
+            🌷 No applications yet.
+            <br />
+            Add your first opportunity above
+          </div>
+        ) : (
+          applications.map((application) => (
+            <div 
+              key={application.id}
+              className="application-card"
+            >
 
-      <br />
-      <br />
+              <div className="company-name">{application.company}</div>
 
-      <textarea 
-        placeholder="Notes"
-        value={notes}
-        onChange={(e) => setNotes(e.target.value)}
-        rows={4}
-        cols={40}
-      />
+              <div className="role">{application.role}</div>
 
-      <br />
-      <br />
+              <div
+                className={`status-badge status-${application.status.toLowerCase()}`}
+              >
+                {application.status}
+              </div>
 
-      <button onClick={createApplication}>
-        Add Application
-      </button>
+              <div className="meta">
+                Applied:{" "}
+                {application.applicationDate || "Not specified"}
+              </div>
 
-      <hr />
+              {application.notes && (
+                <div className="meta">
+                  Notes: {application.notes}
+                </div>
+              )}
 
-      <h2>Applications</h2>
+              <button
+                className="delete-button"
+                onClick={() => {
+                  const confirmed = window.confirm(
+                    "Are you sure you want to delete this application?"
+                  );
 
-      {applications.length === 0 ? (
-        <p>No applications yet.</p>
-      ) : (
-        applications.map((app) => (
-          <div 
-            key={app.id}
-            style={{
-              border: "1px solid gray",
-              padding: "1rem",
-              marginBottom: "1rem",
-              borderRadius: "8px",
-            }} 
-          >
-
-          <h3>{app.company}</h3>
-
-          <p>
-            <strong>Role:</strong> {app.role}
-          </p>
-
-          <p>
-            <strong>Status:</strong> {app.status}
-          </p>
-
-          <p>
-            <strong>Applied:</strong> {" "}
-            {app.applicationDate || "Not specified"}
-          </p>
-
-          <p>
-            <strong>Notes:</strong> {" "}
-            {app.notes || "No notes"}
-          </p>
-
-          <button
-            onClick={() => deleteApplication(app.id)}
-          >
-            Delete
-          </button>
-
-        </div>
-      ))
-    )}
-  </div>
+                  if (confirmed) {
+                    deleteApplication(application.id);
+                  }
+                }}
+              >
+                Delete
+              </button>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
   );
 }
 
