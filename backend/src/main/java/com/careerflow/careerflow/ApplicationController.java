@@ -25,6 +25,26 @@ public class ApplicationController {
         return applicationRepository.save(application);
     }
 
+    @PutMapping("/{id}")
+    public Application updateApplication(
+        @PathVariable UUID id,
+        @RequestBody Application updatedApplication) {
+        
+        Application existingApplication = 
+            applicationRepository.findById(id)
+                .orElseThrow();
+        
+        existingApplication.setCompany(updatedApplication.getCompany());
+        existingApplication.setRole(updatedApplication.getRole());
+        existingApplication.setStatus(updatedApplication.getStatus());
+        existingApplication.setApplicationDate(
+            updatedApplication.getApplicationDate());
+        existingApplication.setNotes(
+            updatedApplication.getNotes());
+
+        return applicationRepository.save(existingApplication);
+    }
+
     @DeleteMapping("/{id}")
     public void deleteApplication(@PathVariable UUID id){
         applicationRepository.deleteById(id);
