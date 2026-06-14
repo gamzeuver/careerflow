@@ -17,9 +17,9 @@ function App() {
   const [notes, setNotes] = useState("");
   const [applicationDate, setApplicationDate] = useState("");
   const [applications, setApplications] = useState<Application[]>([]);
-
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("ALL");
   const [editingId, setEditingId] = useState<string | null>(null);
-
   const [editCompany, setEditCompany] = useState("");
   const [editRole, setEditRole] = useState("");
   const [editStatus, setEditStatus] = useState("");
@@ -103,11 +103,29 @@ function App() {
     loadApplications();
   };
 
+  const filteredApplications = applications.filter((application) => {
+    const matchesSearch = 
+      application.company
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      application.role
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+
+    const matchesStatus =
+      selectedStatus === "ALL" ||
+      application.status === selectedStatus;
+
+    return matchesSearch && matchesStatus;
+  })
+
   return (
     <div className="app-container">
       <h1 className="page-title">CareerFlow</h1>
 
-      <p className="subtitle">Track your opportunities ✨</p>
+      <p className="subtitle">
+        track your opportunities, one step at a time ✨
+      </p>
 
       <div className="card">
         <h2 className="section-title">Add Application</h2>
@@ -141,7 +159,7 @@ function App() {
           onChange={(e) => setApplicationDate(e.target.value)}
         />
 
-        <textarea 
+        <textarea
           placeholder="Notes..."
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
@@ -153,18 +171,111 @@ function App() {
         </button>
       </div>
 
-      <div className="applications-section">
-        <h2 className="section-title">Applications</h2>
+      <div className="dashboard">
+        <div className="stat-card">
+          <div className="stat-number">
+            {applications.length}
+          </div>
 
-        {applications.length === 0 ? (
+          <div className="stat-label">
+            Applications
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-number">
+            {
+              applications.filter(
+                (app) => app.status === "OA"
+              ).length
+            }
+          </div>
+
+          <div className="stat-label">
+            OA
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-number">
+            {
+              applications.filter(
+                (app) => app.status === "INTERVIEW"
+              ).length
+            }
+          </div>
+
+          <div className="stat-label">
+            Interviews
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-number">
+            {
+              applications.filter(
+                (app) => app.status === "OFFER"
+              ).length
+            }
+          </div>
+
+          <div className="stat-label">
+            Offers
+          </div>
+        </div>
+      </div>
+
+      <div className="card">
+        <input
+          placeholder="🔍 Search companies or roles..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+
+        <select
+          value={selectedStatus}
+          onChange={(e) =>
+            setSelectedStatus(e.target.value)
+          }
+        >
+          <option value="ALL">
+            All Statuses
+          </option>
+
+          <option value="APPLIED">
+            Applied
+          </option>
+
+          <option value="OA">
+            Online Assessment
+          </option>
+
+          <option value="INTERVIEW">
+            Interview
+          </option>
+
+          <option value="OFFER">
+            Offer
+          </option>
+
+          <option value="REJECTED">
+            Rejected
+          </option>
+        </select>
+      </div>
+
+      <div className="applications-section">
+        <h2 className="section-title">
+          Applications
+        </h2>
+
+        {filteredApplications.length === 0 ? (
           <div className="empty-state">
-            🌷 No applications yet.
-            <br />
-            Add your first opportunity above
+            🌷 No matching applications.
           </div>
         ) : (
-          applications.map((application) => (
-            <div 
+          filteredApplications.map((application) => (
+            <div
               key={application.id}
               className="application-card"
             >
@@ -172,17 +283,23 @@ function App() {
                 <>
                   <input
                     value={editCompany}
-                    onChange={(e) => setEditCompany(e.target.value)}
+                    onChange={(e) =>
+                      setEditCompany(e.target.value)
+                    }
                   />
 
                   <input
                     value={editRole}
-                    onChange={(e) => setEditRole(e.target.value)}
+                    onChange={(e) =>
+                      setEditRole(e.target.value)
+                    }
                   />
 
-                  <select 
+                  <select
                     value={editStatus}
-                    onChange={(e) => setEditStatus(e.target.value)}
+                    onChange={(e) =>
+                      setEditStatus(e.target.value)
+                    }
                   >
                     <option value="APPLIED">
                       Applied
@@ -205,91 +322,101 @@ function App() {
                     </option>
                   </select>
 
-                  <input 
+                  <input
                     type="date"
                     value={editApplicationDate}
-                    onChange={(e) => setEditApplicationDate(e.target.value)}
+                    onChange={(e) =>
+                      setEditApplicationDate(
+                        e.target.value
+                      )
+                    }
                   />
 
-                  <textarea 
+                  <textarea
                     rows={4}
                     value={editNotes}
-                    onChange={(e) => setEditNotes(e.target.value)}
+                    onChange={(e) =>
+                      setEditNotes(e.target.value)
+                    }
                   />
 
                   <button onClick={saveChanges}>
-          Save
-        </button>
+                    Save
+                  </button>
 
-        <button
-          className="delete-button"
-          onClick={() =>
-            setEditingId(null)
-          }
-          style={{ marginLeft: "10px" }}
-        >
-          Cancel
-        </button>
-      </>
-    ) : (
-      <>
-        <div className="company-name">
-          {application.company}
-        </div>
+                  <button
+                    className="delete-button"
+                    onClick={() =>
+                      setEditingId(null)
+                    }
+                    style={{
+                      marginLeft: "10px",
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div className="company-name">
+                    {application.company}
+                  </div>
 
-        <div className="role">
-          {application.role}
-        </div>
+                  <div className="role">
+                    {application.role}
+                  </div>
 
-        <div
-          className={`status-badge status-${application.status.toLowerCase()}`}
-        >
-          {application.status}
-        </div>
+                  <div
+                    className={`status-badge status-${application.status.toLowerCase()}`}
+                  >
+                    {application.status}
+                  </div>
 
-        <div className="meta">
-          Applied:{" "}
-          {application.applicationDate ||
-            "Not specified"}
-        </div>
+                  <div className="meta">
+                    Applied:{" "}
+                    {application.applicationDate ||
+                      "Not specified"}
+                  </div>
 
-        {application.notes && (
-          <div className="meta">
-            Notes: {application.notes}
-          </div>
+                  {application.notes && (
+                    <div className="meta">
+                      Notes: {application.notes}
+                    </div>
+                  )}
+
+                  <button
+                    onClick={() =>
+                      startEditing(application)
+                    }
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    className="delete-button"
+                    onClick={() => {
+                      const confirmed =
+                        window.confirm(
+                          "Are you sure you want to delete this application?"
+                        );
+
+                      if (confirmed) {
+                        deleteApplication(
+                          application.id
+                        );
+                      }
+                    }}
+                    style={{
+                      marginLeft: "10px",
+                    }}
+                  >
+                    Delete
+                  </button>
+                </>
+              )}
+            </div>
+          ))
         )}
-
-        <button
-          onClick={() =>
-            startEditing(application)
-          }
-        >
-          Edit
-        </button>
-
-        <button
-          className="delete-button"
-          onClick={() => {
-            const confirmed =
-              window.confirm(
-                "Are you sure you want to delete this application?"
-              );
-
-            if (confirmed) {
-              deleteApplication(
-                application.id
-              );
-            }
-          }}
-          style={{ marginLeft: "10px" }}
-        >
-          Delete
-        </button>
-        </>
-          )}
-          </div>
-        ))
-      )}
       </div>
     </div>
   );
